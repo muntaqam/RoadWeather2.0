@@ -1,15 +1,42 @@
-import React, { useMemo, useRef } from 'react';
-import { StyleSheet, View, Dimensions } from 'react-native';
+import React, { useMemo, useRef, useState } from 'react';
+import { StyleSheet, View, Dimensions, FlatList, TouchableOpacity, Text } from 'react-native';
 import MapView from 'react-native-maps';
 import BottomSheet, { BottomSheetView, BottomSheetTextInput } from "@gorhom/bottom-sheet";
+import axios from 'axios';
 
-const HomeScreen = () => {
-  const bottomSheetRef = useRef(null);
+// Define type for place predictions to be used in autocomplete suggestions
+type PlacePrediction = {
+  place_id: string;
+  description: string;
+};
+
+const HomeScreen: React.FC = () => {
+  const bottomSheetRef = useRef<BottomSheet>(null);  // Use specific component type for useRef
   const snapPoints = useMemo(() => ['25%', '50%'], []);
 
-  const handleSheetChanges = (index) => {
+  const [startLocation, setStartLocation] = useState<string>('');  // Specify string type for state
+  const [destinationLocation, setDestinationLocation] = useState<string>('');  // Specify string type for state
+  const [startSuggestions, setStartSuggestions] = useState<PlacePrediction[]>([]);  // Specify array of PlacePrediction for state
+  const [destinationSuggestions, setDestinationSuggestions] = useState<PlacePrediction[]>([]);  // Specify array of PlacePrediction for state
+
+  const handleSheetChanges = (index: number) => {  // Specify type for index
     console.log('handleSheetChanges', index);
-  }
+  };
+
+  const fetchPlaces = async (input: string, setSuggestions: React.Dispatch<React.SetStateAction<PlacePrediction[]>>) => {
+    const apiKey = 'AIzaSyCjgpwny2sV97zBKjkJFRjPunMqxOPLFr0'; // Ensure to replace this with your actual Google API key
+    if (input.length > 2) {
+      try {
+        const response = await axios.get(`https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(input)}&key=${apiKey}&language=en`);
+        setSuggestions(response.data.predictions);
+      } catch (error) {
+        console.error('Failed to fetch places:', error);
+        setSuggestions([]);  // Clear suggestions on error
+      }
+    } else {
+      setSuggestions([]);  // Clear suggestions if input is cleared or very short
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -30,16 +57,65 @@ const HomeScreen = () => {
         <BottomSheetView style={styles.contentContainer}>
           <BottomSheetTextInput
             placeholder="Enter starting point"
-            placeholderTextColor="#c7c7cd"  // Light grey color commonly used for placeholders
+            placeholderTextColor="#c7c7cd"
             style={styles.textInput}
             keyboardType="default"
+            value={startLocation}
+            onChangeText={(text) => {
+              setStartLocation(text);
+              fetchPlaces(text, setStartSuggestions);
+            }}
           />
+
+          {startSuggestions.length > 0 && (
+            <FlatList
+              data={startSuggestions}
+              keyExtractor={(item) => item.place_id}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.suggestionItem}
+                  onPress={() => {
+                    setStartLocation(item.description);
+                    setStartSuggestions([]);
+                  }}
+                >
+                  <Text>{item.description}</Text>
+                </TouchableOpacity>
+              )}
+              style={styles.suggestionsList}
+            />
+          )}
+
           <BottomSheetTextInput
             placeholder="Enter destination"
-            placeholderTextColor="#c7c7cd"  // Light grey color
+            placeholderTextColor="#c7c7cd"
             style={styles.textInput}
             keyboardType="default"
+            value={destinationLocation}
+            onChangeText={(text) => {
+              setDestinationLocation(text);
+              fetchPlaces(text, setDestinationSuggestions);
+            }}
           />
+
+          {destinationSuggestions.length > 0 && (
+            <FlatList
+              data={destinationSuggestions}
+              keyExtractor={(item) => item.place_id}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.suggestionItem}
+                  onPress={() => {
+                    setDestinationLocation(item.description);
+                    setDestinationSuggestions([]);
+                  }}
+                >
+                  <Text>{item.description}</Text>
+                </TouchableOpacity>
+              )}
+              style={styles.suggestionsList}
+            />
+          )}
         </BottomSheetView>
       </BottomSheet>
     </View>
@@ -56,8 +132,8 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    alignItems: 'center', // Center the content horizontally
-    padding: 20, // Add some padding around the content
+    alignItems: 'center',
+    padding: 20,
   },
   textInput: {
     alignSelf: "stretch",
@@ -65,13 +141,13 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingVertical: 10,
     paddingHorizontal: 15,
-    borderRadius: 10, // More rounded corners
+    borderRadius: 10,
     backgroundColor: "white",
     color: "black",
     fontSize: 16,
     textAlign: "left",
     borderWidth: 1,
-    borderColor: '#ccc', // Subtle border
+    borderColor: '#ccc',
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -79,7 +155,16 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
-    elevation: 3, // for Android
+    elevation: 3,
+  },
+  suggestionItem: {
+    padding: 10,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
+  },
+  suggestionsList: {
+    maxHeight: 200, // Set a maximum height for the suggestions list
   }
 });
 
