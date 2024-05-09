@@ -3,7 +3,7 @@ import { StyleSheet, View, Dimensions, FlatList, TouchableOpacity, Text } from '
 import MapView from 'react-native-maps';
 import BottomSheet, { BottomSheetView, BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import axios from 'axios';
-
+import { getRouteDetails } from '../api/routesAPI';
 // Define type for place predictions to be used in autocomplete suggestions
 type PlacePrediction = {
   place_id: string;
@@ -16,13 +16,21 @@ const HomeScreen: React.FC = () => {
 
   const [startLocation, setStartLocation] = useState<string>('');  // Specify string type for state
   const [destinationLocation, setDestinationLocation] = useState<string>('');  // Specify string type for state
+
   const [startSuggestions, setStartSuggestions] = useState<PlacePrediction[]>([]);  // Specify array of PlacePrediction for state
   const [destinationSuggestions, setDestinationSuggestions] = useState<PlacePrediction[]>([]);  // Specify array of PlacePrediction for state
+
+
+  // State for storing place IDs
+  const [startLocationId, setStartLocationId] = useState('');
+  const [destinationLocationId, setDestinationLocationId] = useState('');
 
   const handleSheetChanges = (index: number) => {  // Specify type for index
     console.log('handleSheetChanges', index);
   };
 
+
+  //fetch places suggestions google places api autocomplete 
   const fetchPlaces = async (input: string, setSuggestions: React.Dispatch<React.SetStateAction<PlacePrediction[]>>) => {
     const apiKey = 'AIzaSyCjgpwny2sV97zBKjkJFRjPunMqxOPLFr0'; // Ensure to replace this with your actual Google API key
     if (input.length > 2) {
@@ -37,6 +45,22 @@ const HomeScreen: React.FC = () => {
       setSuggestions([]);  // Clear suggestions if input is cleared or very short
     }
   };
+
+
+  const handleSubmit = async () => {
+    const route = await getRouteDetails(startLocationId, destinationLocationId);
+    console.log("----------THIS IS THE START ID-----", startLocationId)
+    console.log("----------THIS IS THE END ID-----", destinationLocationId)
+    if (route) {
+      console.log('Route found:', route);
+      // Optionally handle the route data (display it, store it, etc.)
+    } else {
+      console.log('No route found or error occurred.');
+    }
+  };
+
+
+
 
   return (
     <View style={styles.container}>
@@ -64,6 +88,7 @@ const HomeScreen: React.FC = () => {
             onChangeText={(text) => {
               setStartLocation(text);
               fetchPlaces(text, setStartSuggestions);
+              console.log("Start location: ", startLocation)
             }}
           />
 
@@ -76,6 +101,7 @@ const HomeScreen: React.FC = () => {
                   style={styles.suggestionItem}
                   onPress={() => {
                     setStartLocation(item.description);
+                    setStartLocationId(item.place_id);
                     setStartSuggestions([]);
                   }}
                 >
@@ -94,7 +120,9 @@ const HomeScreen: React.FC = () => {
             value={destinationLocation}
             onChangeText={(text) => {
               setDestinationLocation(text);
+
               fetchPlaces(text, setDestinationSuggestions);
+              console.log("END location: ", destinationLocation)
             }}
           />
 
@@ -106,7 +134,11 @@ const HomeScreen: React.FC = () => {
                 <TouchableOpacity
                   style={styles.suggestionItem}
                   onPress={() => {
+                    console.log("----------------------------")
+                    console.log("this is the item", item)
+                    console.log("----------------------------")
                     setDestinationLocation(item.description);
+                    setDestinationLocationId(item.place_id);
                     setDestinationSuggestions([]);
                   }}
                 >
@@ -116,6 +148,14 @@ const HomeScreen: React.FC = () => {
               style={styles.suggestionsList}
             />
           )}
+          <TouchableOpacity
+            style={styles.findRouteButton}
+            onPress={() => {
+              handleSubmit();
+            }}
+          >
+            <Text style={styles.buttonText}>Find Route</Text>
+          </TouchableOpacity>
         </BottomSheetView>
       </BottomSheet>
     </View>
@@ -165,6 +205,25 @@ const styles = StyleSheet.create({
   },
   suggestionsList: {
     maxHeight: 200, // Set a maximum height for the suggestions list
+  },
+
+  findRouteButton: {
+    backgroundColor: "#007AFF", // Apple Maps blue color
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    alignSelf: "center",
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 16,
+    textAlign: "center",
   }
 });
 
