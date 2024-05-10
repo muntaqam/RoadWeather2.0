@@ -3,7 +3,10 @@ import { StyleSheet, View, Dimensions, FlatList, TouchableOpacity, Text } from '
 import MapView from 'react-native-maps';
 import BottomSheet, { BottomSheetView, BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import axios from 'axios';
-import { getRouteDetails } from '../api/routesAPI';
+import { calculateWaypoints, decodePolyline, getRouteDetails } from '../api/routesAPI';
+import polyline from '@mapbox/polyline';
+import { fetchWeather } from '../api/weatherAPI';
+
 // Define type for place predictions to be used in autocomplete suggestions
 type PlacePrediction = {
   place_id: string;
@@ -58,6 +61,26 @@ const HomeScreen: React.FC = () => {
       console.log('No route found or error occurred.');
     }
   };
+
+
+  //valculate waypoints
+  const handleCalculateWaypoints = async () => {
+    const route = await getRouteDetails(startLocationId, destinationLocationId);
+    if (route && route.overview_polyline && route.overview_polyline.points) {
+      const coordinates = decodePolyline(route.overview_polyline.points);
+      const waypoints = calculateWaypoints(coordinates, 50); // Calculate waypoints every 50 km
+
+      try {
+        const weatherData = await Promise.all(waypoints.map(wp => fetchWeather(wp.lat, wp.lng)));
+        console.log('Weather data for waypoints:', weatherData);
+      } catch (error) {
+        console.error('Error fetching weather data for waypoints:', error);
+      }
+    } else {
+      console.log('No route or waypoints found.');
+    }
+  };
+
 
 
 
@@ -151,7 +174,8 @@ const HomeScreen: React.FC = () => {
           <TouchableOpacity
             style={styles.findRouteButton}
             onPress={() => {
-              handleSubmit();
+              //handleSubmit();
+              handleCalculateWaypoints();
             }}
           >
             <Text style={styles.buttonText}>Find Route</Text>
