@@ -6,12 +6,21 @@ import axios from 'axios';
 import { calculateWaypoints, decodePolyline, getRouteDetails } from '../api/routesAPI';
 import polyline from '@mapbox/polyline';
 import { fetchWeather } from '../api/weatherAPI';
+import { Image } from 'react-native';
 
 // Define type for place predictions to be used in autocomplete suggestions
 type PlacePrediction = {
   place_id: string;
   description: string;
 };
+
+
+interface WeatherResponse {
+  temperature: number;
+  weather_descriptions: string[];
+  weather_icons: string[];
+}
+
 
 const HomeScreen: React.FC = () => {
   const bottomSheetRef = useRef<BottomSheet>(null);  // Use specific component type for useRef
@@ -27,6 +36,11 @@ const HomeScreen: React.FC = () => {
   // State for storing place IDs
   const [startLocationId, setStartLocationId] = useState('');
   const [destinationLocationId, setDestinationLocationId] = useState('');
+
+
+  const [weatherData, setWeatherData] = useState<(WeatherResponse | null)[]>([]);
+
+
 
   const handleSheetChanges = (index: number) => {  // Specify type for index
     console.log('handleSheetChanges', index);
@@ -68,11 +82,15 @@ const HomeScreen: React.FC = () => {
     const route = await getRouteDetails(startLocationId, destinationLocationId);
     if (route && route.overview_polyline && route.overview_polyline.points) {
       const coordinates = decodePolyline(route.overview_polyline.points);
-      const waypoints = calculateWaypoints(coordinates, 50); // Calculate waypoints every 50 km
+      const totalDistanceKm = route.distance / 1000; // Convert meters to kilometers
+      const intervalKm = totalDistanceKm / 3; // Divide total distance by 3 to get 4 waypoints
+
+      const waypoints = calculateWaypoints(coordinates, intervalKm);
 
       try {
         const weatherData = await Promise.all(waypoints.map(wp => fetchWeather(wp.lat, wp.lng)));
         console.log('Weather data for waypoints:', weatherData);
+        setWeatherData(weatherData);
       } catch (error) {
         console.error('Error fetching weather data for waypoints:', error);
       }
@@ -178,8 +196,32 @@ const HomeScreen: React.FC = () => {
               handleCalculateWaypoints();
             }}
           >
-            <Text style={styles.buttonText}>Find Route</Text>
+            <Text style={styles.buttonText}>Calculate weather</Text>
           </TouchableOpacity>
+
+          {/* Weather data display */}
+          {weatherData.length > 0 && (
+            <FlatList
+              data={weatherData}
+              keyExtractor={(_, index) => index.toString()}
+              renderItem={({ item }) => {
+                if (item) {  // Check if item is not null
+                  return (
+                    <View style={styles.weatherItem}>
+                      <Image source={{ uri: item.weather_icons[0] }} style={styles.weatherIcon} />
+                      <Text>{`${item.temperature}°C - ${item.weather_descriptions[0]}`}</Text>
+                    </View>
+                  );
+                } else {
+                  return <Text style={styles.weatherText}>Weather data unavailable</Text>;
+                }
+              }}
+
+            />
+
+          )}
+
+
         </BottomSheetView>
       </BottomSheet>
     </View>
@@ -248,7 +290,31 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     textAlign: "center",
-  }
+  },
+  weatherItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',  // Aligns children (e.g., the icon) to the left
+    marginTop: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 10,
+    alignSelf: "stretch",
+  },
+
+
+  weatherIcon: {
+    width: 30,
+    height: 30,
+    marginRight: 10,
+  },
+  weatherText: {
+    fontSize: 16,
+    color: '#333',
+  },
+
+
 });
 
 export default HomeScreen;

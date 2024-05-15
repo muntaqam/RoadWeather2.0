@@ -34,6 +34,7 @@ interface Route {
         points: string; // Encoded polyline string of the route
     };
     summary: string;
+    distance: number; //meters
 }
 
 
@@ -46,9 +47,10 @@ export const getRouteDetails = async (startLocationId: string, destinationLocati
     // console.log("URL-------",url)
     try {
         const response = await axios.get(url);
-        // console.log("RESPONSE---------_", response)
         if (response.data.routes.length > 0) {
-            const route = response.data.routes[0] as Route;  // Take the first route and assert the type
+            const route = response.data.routes[0] as Route;
+            const totalDistance = route.legs.reduce((sum, leg) => sum + leg.distance.value, 0);
+            route.distance = totalDistance;
             return route;
         } else {
             console.log('No routes found.');
@@ -56,12 +58,15 @@ export const getRouteDetails = async (startLocationId: string, destinationLocati
         }
     } catch (error) {
         console.error('Failed to fetch route:', error);
-        return null;  // Properly handle the error
+        return null;
     }
 };
 
 
 ///----------WAYPOINTS
+
+
+
 
 export const decodePolyline = (encoded: string): { lat: number; lng: number; }[] => {
     return polyline.decode(encoded).map(([lat, lng]) => ({ lat, lng }));
@@ -75,7 +80,7 @@ export const calculateWaypoints = (coordinates: { lat: number; lng: number; }[],
     for (let i = 1; i < coordinates.length; i++) {
         const prev = coordinates[i - 1];
         const curr = coordinates[i];
-        const distance = haversineDistance(prev, curr); // Calculate distance between points
+        const distance = haversineDistance(prev, curr);
 
         if (accumulatedDistance + distance >= remainingDistance) {
             waypoints.push(curr);
@@ -86,6 +91,7 @@ export const calculateWaypoints = (coordinates: { lat: number; lng: number; }[],
 
     return waypoints;
 };
+
 
 const haversineDistance = (coord1: { lat: number; lng: number; }, coord2: { lat: number; lng: number; }): number => {
     const R = 6371; // Earth radius in km
@@ -99,4 +105,5 @@ const haversineDistance = (coord1: { lat: number; lng: number; }, coord2: { lat:
 };
 
 
+//4 api calls max 
 
