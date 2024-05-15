@@ -40,7 +40,7 @@ interface Route {
 
 // Function to fetch route details from Google Directions API
 export const getRouteDetails = async (startLocationId: string, destinationLocationId: string): Promise<Route | null> => {
-    const apiKey = 'AIzaSyA-Ntbb9UicoUsnpO1LERnY6U6PO8g_9fw'; // Replace with your actual API key
+    const apiKey = 'AIzaSyA-Ntbb9UicoUsnpO1LERnY6U6PO8g_9fw';
     //console.log("beg", startLocationId)
 
     const url = `https://maps.googleapis.com/maps/api/directions/json?origin=place_id:${startLocationId}&destination=place_id:${destinationLocationId}&travel_mode=driving&key=${apiKey}`;

@@ -1,83 +1,53 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { StyleSheet, View, Dimensions, FlatList, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, View, Dimensions, FlatList, TouchableOpacity, Text, Image } from 'react-native';
 import MapView from 'react-native-maps';
 import BottomSheet, { BottomSheetView, BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import axios from 'axios';
 import { calculateWaypoints, decodePolyline, getRouteDetails } from '../api/routesAPI';
-import polyline from '@mapbox/polyline';
 import { fetchWeather } from '../api/weatherAPI';
-import { Image } from 'react-native';
 
-// Define type for place predictions to be used in autocomplete suggestions
 type PlacePrediction = {
   place_id: string;
   description: string;
 };
 
-
 interface WeatherResponse {
   temperature: number;
   weather_descriptions: string[];
   weather_icons: string[];
+  city: string;
 }
 
-
 const HomeScreen: React.FC = () => {
-  const bottomSheetRef = useRef<BottomSheet>(null);  // Use specific component type for useRef
+  const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['25%', '50%'], []);
-
-  const [startLocation, setStartLocation] = useState<string>('');  // Specify string type for state
-  const [destinationLocation, setDestinationLocation] = useState<string>('');  // Specify string type for state
-
-  const [startSuggestions, setStartSuggestions] = useState<PlacePrediction[]>([]);  // Specify array of PlacePrediction for state
-  const [destinationSuggestions, setDestinationSuggestions] = useState<PlacePrediction[]>([]);  // Specify array of PlacePrediction for state
-
-
-  // State for storing place IDs
+  const [startLocation, setStartLocation] = useState<string>('');
+  const [destinationLocation, setDestinationLocation] = useState<string>('');
+  const [startSuggestions, setStartSuggestions] = useState<PlacePrediction[]>([]);
+  const [destinationSuggestions, setDestinationSuggestions] = useState<PlacePrediction[]>([]);
   const [startLocationId, setStartLocationId] = useState('');
   const [destinationLocationId, setDestinationLocationId] = useState('');
-
-
   const [weatherData, setWeatherData] = useState<(WeatherResponse | null)[]>([]);
 
-
-
-  const handleSheetChanges = (index: number) => {  // Specify type for index
+  const handleSheetChanges = (index: number) => {
     console.log('handleSheetChanges', index);
   };
 
-
-  //fetch places suggestions google places api autocomplete 
   const fetchPlaces = async (input: string, setSuggestions: React.Dispatch<React.SetStateAction<PlacePrediction[]>>) => {
-    const apiKey = 'AIzaSyCjgpwny2sV97zBKjkJFRjPunMqxOPLFr0'; // Ensure to replace this with your actual Google API key
+    const apiKey = 'AIzaSyCjgpwny2sV97zBKjkJFRjPunMqxOPLFr0';
     if (input.length > 2) {
       try {
         const response = await axios.get(`https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(input)}&key=${apiKey}&language=en`);
         setSuggestions(response.data.predictions);
       } catch (error) {
         console.error('Failed to fetch places:', error);
-        setSuggestions([]);  // Clear suggestions on error
+        setSuggestions([]);
       }
     } else {
-      setSuggestions([]);  // Clear suggestions if input is cleared or very short
+      setSuggestions([]);
     }
   };
 
-
-  const handleSubmit = async () => {
-    const route = await getRouteDetails(startLocationId, destinationLocationId);
-    console.log("----------THIS IS THE START ID-----", startLocationId)
-    console.log("----------THIS IS THE END ID-----", destinationLocationId)
-    if (route) {
-      console.log('Route found:', route);
-      // Optionally handle the route data (display it, store it, etc.)
-    } else {
-      console.log('No route found or error occurred.');
-    }
-  };
-
-
-  //valculate waypoints
   const handleCalculateWaypoints = async () => {
     const route = await getRouteDetails(startLocationId, destinationLocationId);
     if (route && route.overview_polyline && route.overview_polyline.points) {
@@ -98,10 +68,6 @@ const HomeScreen: React.FC = () => {
       console.log('No route or waypoints found.');
     }
   };
-
-
-
-
 
   return (
     <View style={styles.container}>
@@ -129,10 +95,8 @@ const HomeScreen: React.FC = () => {
             onChangeText={(text) => {
               setStartLocation(text);
               fetchPlaces(text, setStartSuggestions);
-              console.log("Start location: ", startLocation)
             }}
           />
-
           {startSuggestions.length > 0 && (
             <FlatList
               data={startSuggestions}
@@ -152,7 +116,6 @@ const HomeScreen: React.FC = () => {
               style={styles.suggestionsList}
             />
           )}
-
           <BottomSheetTextInput
             placeholder="Enter destination"
             placeholderTextColor="#c7c7cd"
@@ -161,12 +124,9 @@ const HomeScreen: React.FC = () => {
             value={destinationLocation}
             onChangeText={(text) => {
               setDestinationLocation(text);
-
               fetchPlaces(text, setDestinationSuggestions);
-              console.log("END location: ", destinationLocation)
             }}
           />
-
           {destinationSuggestions.length > 0 && (
             <FlatList
               data={destinationSuggestions}
@@ -175,9 +135,6 @@ const HomeScreen: React.FC = () => {
                 <TouchableOpacity
                   style={styles.suggestionItem}
                   onPress={() => {
-                    console.log("----------------------------")
-                    console.log("this is the item", item)
-                    console.log("----------------------------")
                     setDestinationLocation(item.description);
                     setDestinationLocationId(item.place_id);
                     setDestinationSuggestions([]);
@@ -191,23 +148,19 @@ const HomeScreen: React.FC = () => {
           )}
           <TouchableOpacity
             style={styles.findRouteButton}
-            onPress={() => {
-              //handleSubmit();
-              handleCalculateWaypoints();
-            }}
+            onPress={handleCalculateWaypoints}
           >
             <Text style={styles.buttonText}>Calculate weather</Text>
           </TouchableOpacity>
-
-          {/* Weather data display */}
           {weatherData.length > 0 && (
             <FlatList
               data={weatherData}
               keyExtractor={(_, index) => index.toString()}
               renderItem={({ item }) => {
-                if (item) {  // Check if item is not null
+                if (item) {
                   return (
                     <View style={styles.weatherItem}>
+                      <Text>{item.city}</Text>
                       <Image source={{ uri: item.weather_icons[0] }} style={styles.weatherIcon} />
                       <Text>{`${item.temperature}°C - ${item.weather_descriptions[0]}`}</Text>
                     </View>
@@ -216,12 +169,8 @@ const HomeScreen: React.FC = () => {
                   return <Text style={styles.weatherText}>Weather data unavailable</Text>;
                 }
               }}
-
             />
-
           )}
-
-
         </BottomSheetView>
       </BottomSheet>
     </View>
@@ -270,11 +219,10 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
   },
   suggestionsList: {
-    maxHeight: 200, // Set a maximum height for the suggestions list
+    maxHeight: 200,
   },
-
   findRouteButton: {
-    backgroundColor: "#007AFF", // Apple Maps blue color
+    backgroundColor: "#007AFF",
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 20,
@@ -294,7 +242,7 @@ const styles = StyleSheet.create({
   weatherItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',  // Aligns children (e.g., the icon) to the left
+    justifyContent: 'flex-start',
     marginTop: 10,
     paddingHorizontal: 10,
     paddingVertical: 5,
@@ -302,8 +250,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignSelf: "stretch",
   },
-
-
+  cityText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginRight: 10,
+  },
   weatherIcon: {
     width: 30,
     height: 30,
@@ -313,8 +264,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
-
-
 });
 
 export default HomeScreen;
