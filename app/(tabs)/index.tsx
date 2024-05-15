@@ -160,7 +160,7 @@ const HomeScreen: React.FC = () => {
                 if (item) {
                   return (
                     <View style={styles.weatherItem}>
-                      <Text>{item.city}</Text>
+                      <Text style={styles.cityText}>{item.city}</Text>
                       <Image source={{ uri: item.weather_icons[0] }} style={styles.weatherIcon} />
                       <Text>{`${item.temperature}°C - ${item.weather_descriptions[0]}`}</Text>
                     </View>
@@ -242,13 +242,12 @@ const styles = StyleSheet.create({
   weatherItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',
-    marginTop: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    justifyContent: 'space-between',
+    marginVertical: 10,
+    padding: 10,
     backgroundColor: '#f9f9f9',
     borderRadius: 10,
-    alignSelf: "stretch",
+    width: '100%',
   },
   cityText: {
     fontSize: 16,
