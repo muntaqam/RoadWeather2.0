@@ -57,17 +57,20 @@ const HomeScreen: React.FC = () => {
       // Determine the number of waypoints based on the total distance
       let numWaypoints;
       if (totalDistanceKm > 160.934) { // 100 miles in kilometers
-        numWaypoints = 5;
+        numWaypoints = 3; // 5 including start and end
       } else {
-        numWaypoints = 3;
+        numWaypoints = 1; // 3 including start and end
       }
 
       const intervalKm = totalDistanceKm / (numWaypoints + 1);
 
       const waypoints = calculateWaypoints(coordinates, intervalKm);
 
+      // Include starting and ending locations
+      const waypointCoords = [{ lat: coordinates[0].lat, lng: coordinates[0].lng }, ...waypoints, { lat: coordinates[coordinates.length - 1].lat, lng: coordinates[coordinates.length - 1].lng }];
+
       try {
-        const weatherData = await Promise.all(waypoints.map(wp => fetchWeather(wp.lat, wp.lng)));
+        const weatherData = await Promise.all(waypointCoords.map(wp => fetchWeather(wp.lat, wp.lng)));
         console.log('Weather data for waypoints:', weatherData);
         setWeatherData(weatherData);
       } catch (error) {
