@@ -20,7 +20,7 @@ interface WeatherResponse {
 
 const HomeScreen: React.FC = () => {
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ['25%', '50%'], []);
+  const snapPoints = useMemo(() => ['25%', '50%', '75%'], []);
   const [startLocation, setStartLocation] = useState<string>('');
   const [destinationLocation, setDestinationLocation] = useState<string>('');
   const [startSuggestions, setStartSuggestions] = useState<PlacePrediction[]>([]);
@@ -53,7 +53,16 @@ const HomeScreen: React.FC = () => {
     if (route && route.overview_polyline && route.overview_polyline.points) {
       const coordinates = decodePolyline(route.overview_polyline.points);
       const totalDistanceKm = route.distance / 1000; // Convert meters to kilometers
-      const intervalKm = totalDistanceKm / 3; // Divide total distance by 3 to get 4 waypoints
+
+      // Determine the number of waypoints based on the total distance
+      let numWaypoints;
+      if (totalDistanceKm > 160.934) { // 100 miles in kilometers
+        numWaypoints = 5;
+      } else {
+        numWaypoints = 3;
+      }
+
+      const intervalKm = totalDistanceKm / (numWaypoints + 1);
 
       const waypoints = calculateWaypoints(coordinates, intervalKm);
 
@@ -150,26 +159,24 @@ const HomeScreen: React.FC = () => {
             style={styles.findRouteButton}
             onPress={handleCalculateWaypoints}
           >
-            <Text style={styles.buttonText}>Calculate weather</Text>
+            <Text style={styles.buttonText}>View Weather Forecast</Text>
           </TouchableOpacity>
           {weatherData.length > 0 && (
-            <FlatList
-              data={weatherData}
-              keyExtractor={(_, index) => index.toString()}
-              renderItem={({ item }) => {
-                if (item) {
-                  return (
-                    <View style={styles.weatherItem}>
+            <View style={styles.weatherContainer}>
+              {weatherData.map((item, index) => (
+                <View key={index} style={styles.weatherItem}>
+                  {item ? (
+                    <>
                       <Text style={styles.cityText}>{item.city}</Text>
                       <Image source={{ uri: item.weather_icons[0] }} style={styles.weatherIcon} />
-                      <Text>{`${item.temperature}°C - ${item.weather_descriptions[0]}`}</Text>
-                    </View>
-                  );
-                } else {
-                  return <Text style={styles.weatherText}>Weather data unavailable</Text>;
-                }
-              }}
-            />
+                      <Text>{`${item.temperature}°F - ${item.weather_descriptions[0]}`}</Text>
+                    </>
+                  ) : (
+                    <Text style={styles.weatherText}>Weather data unavailable</Text>
+                  )}
+                </View>
+              ))}
+            </View>
           )}
         </BottomSheetView>
       </BottomSheet>
@@ -238,6 +245,10 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     textAlign: "center",
+  },
+  weatherContainer: {
+    alignSelf: "stretch",
+    marginTop: 20,
   },
   weatherItem: {
     flexDirection: 'row',

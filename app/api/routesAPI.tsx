@@ -31,20 +31,16 @@ interface Leg {
 interface Route {
     legs: Leg[];
     overview_polyline: {
-        points: string; // Encoded polyline string of the route
+        points: string;
     };
     summary: string;
-    distance: number; //meters
+    distance: number;
 }
 
-
-// Function to fetch route details from Google Directions API
 export const getRouteDetails = async (startLocationId: string, destinationLocationId: string): Promise<Route | null> => {
     const apiKey = 'AIzaSyA-Ntbb9UicoUsnpO1LERnY6U6PO8g_9fw';
-    //console.log("beg", startLocationId)
 
     const url = `https://maps.googleapis.com/maps/api/directions/json?origin=place_id:${startLocationId}&destination=place_id:${destinationLocationId}&travel_mode=driving&key=${apiKey}`;
-    // console.log("URL-------",url)
     try {
         const response = await axios.get(url);
         if (response.data.routes.length > 0) {
@@ -61,12 +57,6 @@ export const getRouteDetails = async (startLocationId: string, destinationLocati
         return null;
     }
 };
-
-
-///----------WAYPOINTS
-
-
-
 
 export const decodePolyline = (encoded: string): { lat: number; lng: number; }[] => {
     return polyline.decode(encoded).map(([lat, lng]) => ({ lat, lng }));
@@ -92,7 +82,6 @@ export const calculateWaypoints = (coordinates: { lat: number; lng: number; }[],
     return waypoints;
 };
 
-
 const haversineDistance = (coord1: { lat: number; lng: number; }, coord2: { lat: number; lng: number; }): number => {
     const R = 6371; // Earth radius in km
     const dLat = (coord2.lat - coord1.lat) * Math.PI / 180;
@@ -103,7 +92,3 @@ const haversineDistance = (coord1: { lat: number; lng: number; }, coord2: { lat:
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
 };
-
-
-//4 api calls max 
-

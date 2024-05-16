@@ -35,8 +35,11 @@ export async function fetchWeather(lat: number, lng: number): Promise<WeatherRes
         console.log('this is the city-------------------------', city); // Log the city
 
         if (weatherResponse.data && weatherResponse.data.current) {
+            const tempCelsius = weatherResponse.data.current.temperature;
+            const tempFahrenheit = (tempCelsius * 9 / 5) + 32;
+
             return {
-                temperature: weatherResponse.data.current.temperature,
+                temperature: tempFahrenheit,
                 weather_descriptions: weatherResponse.data.current.weather_descriptions,
                 weather_icons: weatherResponse.data.current.weather_icons,
                 city: city
