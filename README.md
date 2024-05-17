@@ -22,7 +22,8 @@ In the output, you'll find options to open the app in a
 
 ## Screenshots
 
-![(https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExamgxZjN0OHFnNnIxaml6c3BvaGJidmNqOTcwdXV5MjhyZWFieGhwZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ATAmal71C4Maneg6Hg/giphy.gif)](path_to_screenshot_1.png)
+![Description](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExamgxZjN0OHFnNnIxaml6c3BvaGJidmNqOTcwdXV5MjhyZWFieGhwZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ATAmal71C4Maneg6Hg/giphy.gif)
+
 ![Screenshot 2](path_to_screenshot_2.png)
 
 ## Installation
