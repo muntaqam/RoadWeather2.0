@@ -257,9 +257,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginVertical: 10,
-    padding: 10,
-    backgroundColor: '#f9f9f9',
+    marginVertical: 8,
+    padding: 8,
+    backgroundColor: '#94B1FF',
     borderRadius: 10,
     width: '100%',
   },
@@ -269,8 +269,8 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   weatherIcon: {
-    width: 30,
-    height: 30,
+    width: 50,
+    height: 50,
     marginRight: 10,
   },
   weatherText: {
