@@ -1,4 +1,4 @@
-# RoadWeather
+# RoadWeather 🚗 🌤️
 
 RoadWeather is a mobile application developed with React Native and TypeScript that provides users with real-time weather forecasts for multiple cities along their road trip route. By leveraging the Google Maps API and WeatherStack API, the app dynamically calculates waypoints and fetches accurate weather data to enhance trip planning and safety.
 
@@ -86,5 +86,6 @@ To get started with RoadWeather, follow these steps:
 Contributions are welcome! Please open an issue or submit a pull request for any features, bug fixes, or enhancements.
 
 ## Contact
+This project was created by Muntaqa Maahi. You can find more about me on my website: muntaqamaahi.com.
 
 For any questions or suggestions, feel free to contact me at [munma980@gmail.com](mailto:munma980@gmail.com).
