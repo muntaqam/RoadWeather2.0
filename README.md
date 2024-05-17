@@ -60,6 +60,19 @@ To get started with RoadWeather, follow these steps:
 2. Enter your starting point and destination.
 3. View real-time weather forecasts for multiple cities along your route.
 
+## Features in Progress
+
+- **Time-stamped Weather Forecasts**: Display weather forecasts for cities based on the estimated time of arrival.
+- **Enhanced UX/UI Designs**: Improve the user interface for a more seamless and intuitive experience.
+
+
+## Future Features
+- **Route Saving**: Allow users to save their favorite routes for quick access in the future.
+- **Custom Waypoints**: Allow users to add custom waypoints along their route for more detailed weather information.
+
+
+  
+
 ## Technologies Used
 
 - React Native
