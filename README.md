@@ -73,12 +73,13 @@ To get started with RoadWeather, follow these steps:
 
   
 
-## Technologies Used
+## Built With
+- [React Native](https://reactnative.dev/) - Framework for building native apps using React
+- [Expo](https://expo.dev/) - Platform for making universal React applications
+- [Google Maps API](https://developers.google.com/maps) - API for maps and location data
+- [OpenWeather API](https://openweathermap.org/api) - API for weather data
+- [react-native-bottom-sheet](https://github.com/gorhom/react-native-bottom-sheet) - Bottom sheet component for React Native
 
-- React Native
-- TypeScript
-- Google Maps API
-- WeatherStack API
 
 ## Contributing
 
