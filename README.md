@@ -1,4 +1,4 @@
-# RoadWeather
+# RoadWeather 🚗 🌤️
 
 RoadWeather is a mobile application developed with React Native and TypeScript that provides users with real-time weather forecasts for multiple cities along their road trip route. By leveraging the Google Maps API and WeatherStack API, the app dynamically calculates waypoints and fetches accurate weather data to enhance trip planning and safety.
 
@@ -60,17 +60,32 @@ To get started with RoadWeather, follow these steps:
 2. Enter your starting point and destination.
 3. View real-time weather forecasts for multiple cities along your route.
 
-## Technologies Used
+## Features in Progress
 
-- React Native
-- TypeScript
-- Google Maps API
-- WeatherStack API
+- **Time-stamped Weather Forecasts**: Display weather forecasts for cities based on the estimated time of arrival.
+- **Enhanced UX/UI Designs**: Improve the user interface for a more seamless and intuitive experience.
+
+
+## Future Features
+- **Route Saving**: Allow users to save their favorite routes for quick access in the future.
+- **Custom Waypoints**: Allow users to add custom waypoints along their route for more detailed weather information.
+
+
+  
+
+## Built With
+- [React Native](https://reactnative.dev/) - Framework for building native apps using React
+- [Expo](https://expo.dev/) - Platform for making universal React applications
+- [Google Maps API](https://developers.google.com/maps) - API for maps and location data
+- [OpenWeather API](https://openweathermap.org/api) - API for weather data
+- [react-native-bottom-sheet](https://github.com/gorhom/react-native-bottom-sheet) - Bottom sheet component for React Native
+
 
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request for any features, bug fixes, or enhancements.
 
 ## Contact
+This project was created by Muntaqa Maahi. You can find more about me on my website: https://muntaqamaahi.com/
 
 For any questions or suggestions, feel free to contact me at [munma980@gmail.com](mailto:munma980@gmail.com).
