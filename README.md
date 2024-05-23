@@ -86,6 +86,6 @@ To get started with RoadWeather, follow these steps:
 Contributions are welcome! Please open an issue or submit a pull request for any features, bug fixes, or enhancements.
 
 ## Contact
-This project was created by Muntaqa Maahi. You can find more about me on my website: muntaqamaahi.com.
+This project was created by Muntaqa Maahi. You can find more about me on my website: https://muntaqamaahi.com/
 
 For any questions or suggestions, feel free to contact me at [munma980@gmail.com](mailto:munma980@gmail.com).
