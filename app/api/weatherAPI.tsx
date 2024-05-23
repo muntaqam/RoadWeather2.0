@@ -16,13 +16,12 @@ export async function fetchWeather(lat: number, lng: number): Promise<WeatherRes
 
     try {
         const [weatherResponse, nearbyResponse] = await Promise.all([axios.get(weatherUrl), axios.get(nearbySearchUrl)]);
-        console.log('Weather Response:', weatherResponse.data); // Log the weather response
-        console.log('Nearby Response:', nearbyResponse.data); // Log the nearby response
-
-        // Function to extract big city from nearby search results
+        console.log('Weather Response:', weatherResponse.data);
+        console.log('Nearby Response:', nearbyResponse.data);
+        // extract main city from nearby search results
         const extractBigCity = (results: any[]): string => {
             if (results.length > 0) {
-                return results[0].name; // Return the name of the most prominent result
+                return results[0].name; // Return the name of the closest result
             }
             return "Unknown Location";
         };

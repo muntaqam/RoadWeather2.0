@@ -29,8 +29,8 @@ const GooglePlacesInput: React.FC<GooglePlacesInputProps> = ({ placeholder, valu
                 setAddress(address);
             }}
             query={{
-                key: 'AIzaSyCjgpwny2sV97zBKjkJFRjPunMqxOPLFr0',  // Ensure you replace this with your actual API key
-                language: 'en', // Language of the results
+                key: 'AIzaSyCjgpwny2sV97zBKjkJFRjPunMqxOPLFr0',
+                language: 'en',
             }}
             styles={{
                 textInputContainer: {
@@ -46,13 +46,13 @@ const GooglePlacesInput: React.FC<GooglePlacesInputProps> = ({ placeholder, valu
                 predefinedPlacesDescription: {
                     color: '#1faadb',
                 },
-                listView: { // Controlling the height of the list view might help in not needing to scroll
-                    height: 120, // Adjust height based on your UI design to accommodate about 3 items
+                listView: {
+                    height: 120, //  3 items
                 },
             }}
             textInputProps={{
-                value: value,  // Control the displayed value
-                onChangeText: setAddress,  // Handle changes
+                value: value,
+                onChangeText: setAddress,
             }}
             debounce={200}
         />
