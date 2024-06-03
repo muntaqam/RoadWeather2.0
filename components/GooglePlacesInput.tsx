@@ -29,7 +29,7 @@ const GooglePlacesInput: React.FC<GooglePlacesInputProps> = ({ placeholder, valu
                 setAddress(address);
             }}
             query={{
-                key: 'AIzaSyCjgpwny2sV97zBKjkJFRjPunMqxOPLFr0',
+                key: env.GOOGLE_KEY,
                 language: 'en',
             }}
             styles={{
