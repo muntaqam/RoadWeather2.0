@@ -38,7 +38,7 @@ interface Route {
 }
 
 export const getRouteDetails = async (startLocationId: string, destinationLocationId: string): Promise<Route | null> => {
-    const apiKey = 'AIzaSyA-Ntbb9UicoUsnpO1LERnY6U6PO8g_9fw';
+    const apiKey = env.LOCATIONAPI;
 
     const url = `https://maps.googleapis.com/maps/api/directions/json?origin=place_id:${startLocationId}&destination=place_id:${destinationLocationId}&travel_mode=driving&key=${apiKey}`;
     try {
