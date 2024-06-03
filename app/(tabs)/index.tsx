@@ -34,7 +34,7 @@ const HomeScreen: React.FC = () => {
   };
 
   const fetchPlaces = async (input: string, setSuggestions: React.Dispatch<React.SetStateAction<PlacePrediction[]>>) => {
-    const apiKey = 'AIzaSyCjgpwny2sV97zBKjkJFRjPunMqxOPLFr0';
+    const apiKey = env.PLACES_API;
     if (input.length > 2) {
       try {
         const response = await axios.get(`https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(input)}&key=${apiKey}&language=en`);
