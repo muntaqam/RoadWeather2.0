@@ -8,10 +8,10 @@ interface WeatherResponse {
 }
 
 export async function fetchWeather(lat: number, lng: number): Promise<WeatherResponse | null> {
-    const weatherApiKey = 'c95ca835eb296fe68c7e80344cff681b'; // OpenWeather API key
+    const weatherApiKey = env.WEATHERAPI; // OpenWeather API key
     const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${weatherApiKey}&units=imperial`;
 
-    const geoApiKey = 'AIzaSyA-Ntbb9UicoUsnpO1LERnY6U6PO8g_9fw'; // Google API key
+    const geoApiKey = env.GEOLOCATION_API; // Google API key
     const nearbySearchUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=50000&type=locality&key=${geoApiKey}`;
 
     try {
